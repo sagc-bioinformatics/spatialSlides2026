@@ -1,0 +1,192 @@
+---
+title: "Setup and Intro to SpatialExperiment"
+output:
+  xaringan::moon_reader:
+    seal: true
+    lib_dir: libs
+    chakra: libs/remark-latest.min.js
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      ratio: "16:9"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.retina = 2
+)
+```
+
+
+# Installation
+
+Everything you need for the workshop can be installed from `R` via `BiocManager`:
+
+```{r install, eval=FALSE}
+install.packages("BiocManager")
+BiocManager::install()
+BiocManager::install("bhuvad/CosMxSpatialAnalysisWorkshop")
+```
+
+---
+
+# The Bioconductor ecosystem
+
+
+- A bioinformatics-focused package repository with relatively strict requirements, and an active community. 
+- Many great R packages for single cell and spatial transcriptomics within the Bioconductor ecosystem. 
+- Packages built upon common data structures mean Bioconductor packages are often interoperable.
+
+---
+
+# What is a SpatialExperiment?
+
+Let's take advantage of the generally good documentation of the Bioconductor ecosystem and look at the vingette for SpatialExperiment to explain:
+
+```{r, eval=FALSE}
+browseVignettes("SpatialExperiment")
+```
+
+---
+
+# Loading the example data
+
+```{r}
+library(SpatialExperiment)
+# This may require BiocManager::install("VisiumIO")
+example(SpatialExperiment, echo = FALSE)
+spe
+```
+
+---
+
+# Useful attributes
+
+- store multiple transformations of assay data
+- can put your image data in here (imgData)
+- store spatial x/y coordinates
+- store cell and gene metadata (rowData and colData)
+- store embeddings and dimensionality reductions (reducedDims)
+- probe or sequencing based spatial can both be analysed (as long as you collapse to cells or bins)
+- other extentions (e.g. `SpatialFeatureExperiment`) can even integrate geometry
+
+
+---
+
+
+# SpatialExperiment's relationships
+
+Most spatial packages in Bioconductor are built around `SpatialExperiment`.
+`SpatialExperiment` actually extends from another Bioconductor package, `SingleCellExperiment`, which in turn extends `SummarizedExperiment`.
+
+```{r}
+library(CosMxSpatialAnalysisWorkshop)
+data(spe)
+is(spe, "SpatialExperiment")
+is(spe, "SingleCellExperiment")
+```
+
+Many popular single cell packages (e.g. `scater`, `scran`) were written with `SingleCellExperiment` in mind.
+But they can also accept classes that extend `SingleCellExperiment`, meaning we can use `SpatialExperiment` objects with these packages!
+
+---
+
+
+# Updating
+
+Perhaps we want to log our counts:
+
+```{r}
+assays(spe)
+```
+
+First we'll have to ensure there are no zeros.
+We can subset the SPE to filter zeros out:
+
+```{r}
+# subsetting returns a new object, we can overwrite the old one
+spe <- spe[, colSums(counts(spe)) > 0]
+```
+
+We can then add a new assay update the object as our analysis progresses:
+
+```{r}
+library(scuttle)
+spe <- logNormCounts(spe)
+assays(spe)
+```
+
+
+---
+
+# More on subsetting
+
+Rows are genes, columns are cells.
+Subsetting the SPE also subsets all slots and metadata in sync!
+
+```{r subsetting, eval=FALSE}
+# First 10 genes, all cells
+spe[1:10, ]
+# subset cells based on coldata column
+spe[, spe$in_issue]
+
+# subset by spatial coordinates
+spe[, spatialCoords(spe)[, 1] > 2000]
+```
+
+---
+
+# Plotting in Space
+
+`plotSpatial` from `SpaNorm` returns a `ggplot` object:
+
+```{r plot-region, eval=FALSE}
+library(SpaNorm)
+
+plotSpatial(spe, what = "expression", assay = "logcounts", colour = ENSMUSG00000051951)
+```
+
+---
+
+# How do I build a SpatialExperiment?
+
+**Importers exist for most platforms:**
+```{r importers, eval=FALSE}
+library(SpatialExperimentIO)
+# from SpatialExperimentIO
+spe <- readXeniumSXE("path/to/xenium/output/")
+spe <- readCosMxSXE("path/to/cosmx/output/")
+# built into SpatialExperiment
+spe <- read10xVisium("path/to/spaceranger/output/")
+```
+
+Packages to import specific technologies can lag behind vendor updates,
+but it's easy to construct one manually:
+
+```{r build-spe, eval=FALSE}
+library(Matrix)
+
+spe <- SpatialExperiment(
+  assays        = list(counts = counts_matrix),  # genes x cells
+  rowData       = gene_metadata,    # data.frame, one row per gene
+  colData       = cell_metadata,    # data.frame, one row per cell/spot
+  spatialCoords = coords_matrix     # matrix with "x" and "y" columns
+)
+```
+
+---
+
+class: inverse, center, middle
+
+# What's Next
+
+Workshop: https://bhuvad.github.io/CosMxSpatialAnalysisWorkshop/articles/workflow_spatial_cosmx.html
+
+```{r, echo=FALSE, out.width="30%"}
+library(qrcode)
+plot(qr_code("https://bhuvad.github.io/CosMxSpatialAnalysisWorkshop/articles/workflow_spatial_cosmx.html"))
+```
+
