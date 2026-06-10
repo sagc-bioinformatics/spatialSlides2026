@@ -31,6 +31,12 @@ BiocManager::install()
 BiocManager::install("bhuvad/CosMxSpatialAnalysisWorkshop")
 ```
 
+Link to these slides:
+
+```{r, echo=FALSE, out.width="30%"}
+library(qrcode)
+plot(qr_code("https://github.com/sagc-bioinformatics/spatialSlides2026"))
+```
 ---
 
 # The Bioconductor ecosystem
