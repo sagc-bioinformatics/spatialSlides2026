@@ -131,17 +131,7 @@ But they can also accept classes that extend `SingleCellExperiment`, meaning we 
 
 # Updating
 
-Perhaps we want to log our counts:
-
-
-``` r
-assays(spe)
-```
-
-```
-## List of length 1
-## names(1): counts
-```
+Perhaps we want to log our counts.
 
 First we'll have to ensure there are no zeros.
 We can subset the SPE to filter zeros out:
@@ -152,7 +142,7 @@ We can subset the SPE to filter zeros out:
 spe &lt;- spe[, colSums(counts(spe)) &gt; 0]
 ```
 
-We can then add a new assay update the object as our analysis progresses:
+We can then add a new assay to update the object as our analysis progresses:
 
 
 ``` r
@@ -236,7 +226,7 @@ class: inverse, center, middle
 
 Workshop: https://bhuvad.github.io/CosMxSpatialAnalysisWorkshop/articles/workflow_spatial_cosmx.html
 
-&lt;img src="intro_slides_files/figure-html/unnamed-chunk-8-1.png" alt="" width="30%" /&gt;
+&lt;img src="intro_slides_files/figure-html/unnamed-chunk-7-1.png" alt="" width="30%" /&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

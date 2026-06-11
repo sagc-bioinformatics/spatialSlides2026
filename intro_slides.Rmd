@@ -101,11 +101,7 @@ But they can also accept classes that extend `SingleCellExperiment`, meaning we 
 
 # Updating
 
-Perhaps we want to log our counts:
-
-```{r}
-assays(spe)
-```
+Perhaps we want to log our counts.
 
 First we'll have to ensure there are no zeros.
 We can subset the SPE to filter zeros out:
@@ -115,7 +111,7 @@ We can subset the SPE to filter zeros out:
 spe <- spe[, colSums(counts(spe)) > 0]
 ```
 
-We can then add a new assay update the object as our analysis progresses:
+We can then add a new assay to update the object as our analysis progresses:
 
 ```{r}
 library(scuttle)
