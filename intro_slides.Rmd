@@ -89,8 +89,6 @@ Most spatial packages in Bioconductor are built around `SpatialExperiment`.
 `SpatialExperiment` actually extends from another Bioconductor package, `SingleCellExperiment`, which in turn extends `SummarizedExperiment`.
 
 ```{r}
-library(CosMxSpatialAnalysisWorkshop)
-data(spe)
 is(spe, "SpatialExperiment")
 is(spe, "SingleCellExperiment")
 ```
